@@ -1,0 +1,26 @@
+<application>
+  <component name="VimSettings">
+    <state version="4" enabled="false" />
+    <globalmarks />
+    <filemarks>
+      <file name="/Users/wushijia/PycharmProjects/onlineproject/apps/dataAnalysor/global_variable.py" timestamp="1530671198151" />
+      <file name="/Users/wushijia/PycharmProjects/onlineproject/apps/dataAnalysor/adminx.py" timestamp="1530671464514">
+        <mark key="'" line="71" column="0" />
+      </file>
+    </filemarks>
+    <jumps>
+      <jump line="70" column="0" filename="/Users/wushijia/PycharmProjects/onlineproject/apps/dataAnalysor/adminx.py" />
+      <jump line="71" column="0" filename="/Users/wushijia/PycharmProjects/onlineproject/apps/dataAnalysor/adminx.py" />
+    </jumps>
+    <registers />
+    <search>
+      <last-dir>0</last-dir>
+      <show-last>false</show-last>
+    </search>
+    <history />
+    <shortcut-conflicts />
+    <editor>
+      <key-repeat enabled="false" />
+    </editor>
+  </component>
+</application>

@@ -1,0 +1,11 @@
+<application>
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="d696c23b-05d0-49b0-bccf-a92659d12f52" name="OnlineXadmin" url="http:///">
+        <fileTransfer host="39.104.181.244" port="22" accessType="SFTP">
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</application>
