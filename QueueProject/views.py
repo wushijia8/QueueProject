@@ -8,6 +8,8 @@ import time
 
 from dwebsocket import require_websocket
 
+count = 0
+
 
 class Receiver(APIView):
     def post(self, request):
@@ -19,6 +21,7 @@ class Receiver(APIView):
 @require_websocket
 def echo(request):
     key_subscribe = 'fm104.5'
+    global count
     if not request.is_websocket():
         try:
             message = request.GET['message']
@@ -30,6 +33,11 @@ def echo(request):
         redis_cli = None
         redis_pubsub = None
         websocket = request.websocket
+        if count < 1:
+            count += 1
+        else:
+            websocket.send(json.dumps("当前连接人数已满，请稍后再试", ensure_ascii=False))
+            websocket.close()
         try:
             redis_cli = redis.Redis(host='127.0.0.1')
             redis_pubsub = redis_cli.pubsub()
@@ -37,6 +45,7 @@ def echo(request):
 
             while True:
                 message = redis_pubsub.parse_response()
+                print "message", message
                 websocket.send(json.dumps(str(message[-1]) + "：" + str(time.time()), ensure_ascii=False))
                 # ws_msg = websocket.read()
                 # sub_msg = redis_pubsub.get_message()
