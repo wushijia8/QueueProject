@@ -2,4 +2,7 @@
 from RedisSubscriber import RedisHelper
 
 obj = RedisHelper()
-obj.public("test msg")
+
+
+def m_publish(msg):
+    obj.public(msg)

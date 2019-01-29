@@ -8,6 +8,8 @@ import time
 
 from dwebsocket import require_websocket
 
+from publish import m_publish
+
 count = 0
 
 
@@ -16,6 +18,14 @@ class Receiver(APIView):
         num1 = request.data[u"num1"]
         num2 = request.data[u"num2"]
         return HttpResponse('{"status":"success"}', content_type='application/json')
+
+
+class Publish(APIView):
+    def post(self, request):
+        msg = request.data[u"msg"]
+        print msg
+        m_publish(msg)
+        return HttpResponse('{"status":"success"}', content_type="application/json")
 
 
 @require_websocket
