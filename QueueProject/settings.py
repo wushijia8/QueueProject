@@ -41,7 +41,28 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
+    'ws4redis',
+
 ]
+
+WEBSOCKET_URL = '/ws/'
+
+WS4REDIS_EXPIRE = 0
+WS4REDIS_PREFIX = 'ws'
+WSGI_APPLICATION = 'ws4redis.django_runserver.application'
+
+SESSION_ENGINE = 'redis_sessions.session'
+SESSION_REDIS_PREFIX = 'session'
+
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'asgi_redis.RedisChannelLayer',
+#         'CONFIG': {
+#             'hosts': [('127.0.0.1', 6379)]
+#         },
+#         'ROUTING': 'QueueProject.routing.channel_routing',
+#     }
+# }
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
@@ -54,6 +75,8 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
+
+WEBSOCKET_ACCEPT_ALL = True
 
 CORS_ORIGIN_ALLOW_ALL = True
 

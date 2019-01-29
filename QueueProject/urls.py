@@ -22,4 +22,5 @@ from .views import *
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'receiver$', Receiver.as_view(), name="receiver"),
+    url(r'echo$', echo, name="echo"),
 ]
