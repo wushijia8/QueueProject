@@ -23,8 +23,8 @@ class Receiver(APIView):
 class Publish(APIView):
     def post(self, request):
         msg = request.data[u"msg"]
-        print msg
-        m_publish(msg)
+        conn = redis.StrictRedis()
+        conn.lpush("msgQueue", msg)
         return HttpResponse('{"status":"success"}', content_type="application/json")
 
 
@@ -40,34 +40,20 @@ def echo(request):
             print e.message
             return HttpResponse(e.message)
     else:
-        redis_cli = None
-        redis_pubsub = None
+        conn = None
         websocket = request.websocket
-        if count < 1:
+        if count < 5:
             count += 1
         else:
             websocket.send(json.dumps("当前连接人数已满，请稍后再试", ensure_ascii=False))
             websocket.close()
         try:
-            redis_cli = redis.Redis(host='127.0.0.1')
-            redis_pubsub = redis_cli.pubsub()
-            redis_pubsub.subscribe(key_subscribe)
-
+            conn = redis.StrictRedis()
             while True:
-                message = redis_pubsub.parse_response()
-                print "message", message
-                websocket.send(json.dumps(str(message[-1]) + "：" + str(time.time()), ensure_ascii=False))
-                # ws_msg = websocket.read()
-                # sub_msg = redis_pubsub.get_message()
-                # if ws_msg:
-                #     msg = json.loads(ws_msg)
-                #     msg['date'] = time.asctime(time.localtime(time.time()))
-                #     redis_cli.pubsub(key_subscribe, json.dumps(msg))
-                #
-                # if sub_msg and sub_msg['type'] == 'message':
-                #     message = json.loads(sub_msg['date'])
-                #     message['code'] = 200
-                #     websocket.send(json.dumps(message))
+                msg = conn.brpop("msgQueue")[1]
+                if msg is None:
+                    continue
+                websocket.send(msg)
         except BaseException as e:
             print e.message
 
