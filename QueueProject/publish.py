@@ -1,8 +1,12 @@
 # _*_ encoding:utf-8 _*_
-from RedisSubscriber import RedisHelper
-
-obj = RedisHelper()
+import redis
+import time
 
 
 def m_publish(msg):
-    obj.public(msg)
+    conn = redis.StrictRedis()
+    print msg
+    conn.lpush("msgQueue", msg)
+
+
+# m_publish("publish msg " + str(time.time()))

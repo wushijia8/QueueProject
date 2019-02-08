@@ -48,6 +48,7 @@ def echo(request):
             websocket.send(json.dumps("当前连接人数已满，请稍后再试", ensure_ascii=False))
             websocket.close()
         try:
+            websocket.send("连接成功")
             conn = redis.StrictRedis()
             while True:
                 msg = conn.brpop("msgQueue")[1]
