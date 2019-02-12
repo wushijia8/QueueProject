@@ -4,7 +4,6 @@ from django.http import HttpResponse
 from rest_framework.views import APIView
 import redis
 import json
-import time
 
 from dwebsocket import require_websocket
 
@@ -30,7 +29,7 @@ class Publish(APIView):
 
 @require_websocket
 def echo(request):
-    key_subscribe = 'fm104.5'
+    key_subscribe = "msgQueue"
     global count
     if not request.is_websocket():
         try:
@@ -41,6 +40,7 @@ def echo(request):
             return HttpResponse(e.message)
     else:
         conn = None
+        msg = None
         websocket = request.websocket
         if count < 5:
             count += 1
@@ -51,9 +51,10 @@ def echo(request):
             websocket.send("连接成功")
             conn = redis.StrictRedis()
             while True:
-                msg = conn.brpop("msgQueue")[1]
+                msg = conn.brpop(key_subscribe)[1]
                 if msg is None:
                     continue
+                print msg
                 websocket.send(msg)
         except BaseException as e:
             print e.message
