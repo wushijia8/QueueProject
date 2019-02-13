@@ -24,6 +24,7 @@ class Publish(APIView):
         msg = request.data[u"msg"]
         conn = redis.StrictRedis()
         conn.lpush("msgQueue", msg)
+        # conn.publish("msgQueue", msg)
         return HttpResponse('{"status":"success"}', content_type="application/json")
 
 
@@ -42,20 +43,26 @@ def echo(request):
         conn = None
         msg = None
         websocket = request.websocket
-        if count < 5:
-            count += 1
-        else:
-            websocket.send(json.dumps("当前连接人数已满，请稍后再试", ensure_ascii=False))
-            websocket.close()
+        # if count < 5:
+        #     count += 1
+        # else:
+        #     websocket.send(json.dumps("当前连接人数已满，请稍后再试", ensure_ascii=False))
+        #     websocket.close()
         try:
             websocket.send("连接成功")
             conn = redis.StrictRedis()
+            # ps = conn.pubsub()
+            # ps.subscribe(key_subscribe)
+            # for item in ps.listen():
+            #     if item['type'] == 'message':
+            #         print item['data']
+            #         websocket.send(item['data'])
             while True:
-                msg = conn.brpop(key_subscribe)[1]
-                if msg is None:
-                    continue
-                print msg
-                websocket.send(msg)
+                # print conn.exists(key_subscribe)
+                msg = conn.lpop(key_subscribe)
+                # msg = conn.rpop(key_subscribe)
+                if msg is not None:
+                    websocket.send(msg)
         except BaseException as e:
             print e.message
 
