@@ -2,12 +2,12 @@
 
 from django.http import HttpResponse
 from rest_framework.views import APIView
-import redis
-import json
+import time
 
 from dwebsocket import require_websocket
+import pika
 
-from publish import m_publish
+from .rbSend import send
 
 count = 0
 
@@ -22,9 +22,8 @@ class Receiver(APIView):
 class Publish(APIView):
     def post(self, request):
         msg = request.data[u"msg"]
-        conn = redis.StrictRedis()
-        conn.lpush("msgQueue", msg)
-        # conn.publish("msgQueue", msg)
+        msg += " " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())))
+        send(msg)
         return HttpResponse('{"status":"success"}', content_type="application/json")
 
 
@@ -50,19 +49,22 @@ def echo(request):
         #     websocket.close()
         try:
             websocket.send("连接成功")
-            conn = redis.StrictRedis()
-            # ps = conn.pubsub()
-            # ps.subscribe(key_subscribe)
-            # for item in ps.listen():
-            #     if item['type'] == 'message':
-            #         print item['data']
-            #         websocket.send(item['data'])
-            while True:
-                # print conn.exists(key_subscribe)
-                msg = conn.lpop(key_subscribe)
-                # msg = conn.rpop(key_subscribe)
-                if msg is not None:
-                    websocket.send(msg)
+            connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+            channel = connection.channel()
+            ch = ''
+            method = ''
+            lis = []
+
+            def callback(ch, method, properties, body):
+                ch = ch
+                method = method
+                print body
+                websocket.send(body)
+
+            channel.basic_consume(callback, queue='task_queues', no_ack=True)
+            channel.start_consuming()
+            ch.basic_qos(prefetch_count=1)
+            connection.close()
         except BaseException as e:
-            print e.message
+            print e
 
